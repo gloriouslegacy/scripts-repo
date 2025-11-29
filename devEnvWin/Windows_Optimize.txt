@@ -1,0 +1,128 @@
+&nbsp;## Windows\_Optimize.ps1 - Windows 시스템 최적화 스크립트
+
+
+
+&nbsp; 주요 기능
+
+
+
+&nbsp; 1. Windows 자동 업데이트 차단
+
+&nbsp; - Windows Update 서비스 중지 및 비활성화
+
+&nbsp; - 레지스트리 설정으로 자동 업데이트 차단
+
+&nbsp; - 관련 작업 스케줄러 비활성화
+
+
+
+&nbsp; 2. Microsoft Edge 자동 업데이트 차단
+
+&nbsp; - Edge Update 서비스 비활성화
+
+&nbsp; - 레지스트리 정책 설정
+
+&nbsp; - Edge Update 작업 스케줄러 비활성화
+
+
+
+&nbsp; 3. Google Chrome 자동 업데이트 차단
+
+&nbsp; - Chrome Update 서비스 비활성화
+
+&nbsp; - Google Update 레지스트리 정책 설정
+
+&nbsp; - 관련 작업 스케줄러 비활성화
+
+
+
+&nbsp; 4. SysMain 서비스 비활성화
+
+&nbsp; - Superfetch 서비스 중지 및 비활성화
+
+
+
+&nbsp; 5. OneDrive 제거
+
+&nbsp; - OneDrive 프로세스 종료 및 언인스톨
+
+&nbsp; - 관련 폴더 삭제
+
+&nbsp; - 탐색기에서 OneDrive 아이콘 제거
+
+
+
+&nbsp; 6. Cortana 비활성화
+
+&nbsp; - Cortana 레지스트리 설정으로 비활성화
+
+&nbsp; - Cortana 앱 제거 (Windows 11)
+
+
+
+&nbsp; 사용 방법
+
+
+
+&nbsp;  1단계: 스크립트 생성기 실행
+
+
+
+&nbsp; Set-ExecutionPolicy Bypass -Scope Process -Force
+
+&nbsp; .\\Create-OptimizeScript.ps1
+
+
+
+&nbsp; 이 스크립트가 UTF-8 BOM 인코딩으로 Windows\_Optimize.ps1 파일을 자동 생성합니다.
+
+
+
+&nbsp; 2단계: 생성된 스크립트 실행
+
+
+
+&nbsp; .\\Windows\_Optimize.ps1
+
+
+
+&nbsp; 또는 직접 생성 (PowerShell에서 복사-붙여넣기)
+
+
+
+&nbsp; PowerShell을 관리자 권한으로 열고 다음 명령어를 실행하세요:
+
+
+
+&nbsp; cd C:\\Users\\test\\Desktop
+
+&nbsp; .\\Create-OptimizeScript.ps1
+
+
+
+&nbsp; 그러면 UTF-8 BOM 인코딩으로 올바른 Windows\_Optimize.ps1 파일이 생성됩니다.
+
+
+
+&nbsp; 주요 변경사항
+
+
+
+&nbsp; - 모든 메시지를 영어로 변경하여 인코딩 문제 방지
+
+&nbsp; - UTF-8 BOM 인코딩으로 파일 생성
+
+&nbsp; - 동일한 기능 유지 (Windows Update 차단, Edge/Chrome 업데이트 차단, Sysmain 비활성화, Defender/OneDrive/Cortana
+
+&nbsp; 제거)
+
+
+
+&nbsp; 파일 위치
+
+
+
+&nbsp; - Create-OptimizeScript.ps1 - 스크립트 생성기
+
+&nbsp; - Windows\_Optimize.ps1 - 실제 최적화 스크립트 (생성기 실행 후 생성됨)
+
