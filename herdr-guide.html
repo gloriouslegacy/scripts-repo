@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>herdr 사용 가이드</title>
+<style>
+:root{
+  --bg:#f7f7f5;--panel:#ffffff;--text:#1f2328;--muted:#5d6670;--line:#e3e3df;
+  --accent:#2f7d5b;--accent-soft:#e3f1ea;--code-bg:#f0f0ec;--kbd-bg:#ffffff;--kbd-line:#c9c9c3;
+  --warn:#9a5b00;--warn-soft:#fff4e0;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171a;--panel:#1c1f23;--text:#e6e8ea;--muted:#9aa3ab;--line:#2c3035;
+    --accent:#6cc79c;--accent-soft:#1d3329;--code-bg:#24282d;--kbd-bg:#2a2e33;--kbd-line:#3d434a;
+    --warn:#f0b35a;--warn-soft:#33281a;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171a;--panel:#1c1f23;--text:#e6e8ea;--muted:#9aa3ab;--line:#2c3035;
+  --accent:#6cc79c;--accent-soft:#1d3329;--code-bg:#24282d;--kbd-bg:#2a2e33;--kbd-line:#3d434a;
+  --warn:#f0b35a;--warn-soft:#33281a;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:15px/1.7 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR","Malgun Gothic",sans-serif}
+code,pre,kbd{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+header.top{position:sticky;top:0;z-index:10;background:var(--panel);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:12px;padding:10px 16px}
+header.top h1{font-size:17px;margin:0;white-space:nowrap}
+header.top h1 span{color:var(--accent)}
+#q{flex:1;max-width:420px;padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font-size:14px}
+#themeBtn,#menuBtn{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:13px}
+#menuBtn{display:none}
+.wrap{display:flex;max-width:1280px;margin:0 auto}
+nav.side{width:250px;flex:none;position:sticky;top:57px;height:calc(100vh - 57px);overflow:auto;padding:18px 12px 40px;border-right:1px solid var(--line)}
+nav.side a{display:block;color:var(--muted);text-decoration:none;padding:3px 10px;border-radius:6px;font-size:14px}
+nav.side a:hover{background:var(--accent-soft);color:var(--text)}
+nav.side .grp{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:16px 10px 4px;font-weight:700}
+main{flex:1;min-width:0;padding:24px 32px 80px}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin-bottom:20px}
+section h2{margin:0 0 12px;font-size:21px;display:flex;align-items:center;gap:8px}
+section h2 .num{font-size:12px;background:var(--accent-soft);color:var(--accent);padding:2px 8px;border-radius:99px}
+h3{font-size:16px;margin:22px 0 8px;color:var(--accent)}
+p{margin:8px 0}
+.muted{color:var(--muted)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:var(--bg)}
+.tbl{overflow-x:auto}
+kbd{display:inline-block;background:var(--kbd-bg);border:1px solid var(--kbd-line);border-bottom-width:2px;border-radius:5px;padding:0 6px;font-size:12.5px;line-height:1.6;white-space:nowrap}
+code{background:var(--code-bg);padding:1px 5px;border-radius:4px;font-size:13px}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;font-size:13px;line-height:1.55;position:relative;margin:10px 0}
+pre code{background:none;padding:0}
+pre .c{color:var(--muted)}
+.copy{position:absolute;top:6px;right:6px;font-size:11px;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:5px;padding:2px 7px;cursor:pointer;opacity:.7}
+.copy:hover{opacity:1}
+.note{background:var(--accent-soft);border-left:3px solid var(--accent);padding:10px 14px;border-radius:6px;margin:12px 0;font-size:14px}
+.warn{background:var(--warn-soft);border-left:3px solid var(--warn);padding:10px 14px;border-radius:6px;margin:12px 0;font-size:14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:12px 0}
+.card{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--bg)}
+.card b{display:block;margin-bottom:4px}
+.card .k{margin-top:6px}
+.hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.hero .card{text-align:center}
+.hero .card .k{font-size:15px}
+.state{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.hidden{display:none!important}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:20px}
+@media (max-width:900px){
+  nav.side{position:fixed;left:0;top:57px;background:var(--panel);z-index:9;transform:translateX(-100%);transition:transform .2s;width:260px}
+  nav.side.open{transform:none;box-shadow:4px 0 20px rgba(0,0,0,.2)}
+  #menuBtn{display:inline-block}
+  main{padding:16px}
+  section{padding:16px}
+  header.top h1{font-size:15px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <button id="menuBtn" aria-label="메뉴">☰</button>
+  <h1><span>herdr</span> 사용 가이드</h1>
+  <input id="q" type="search" placeholder="명령어·단축키 검색 (예: split, prefix+z, agent wait)">
+  <button id="themeBtn" title="테마 전환">◐</button>
+</header>
+<div class="wrap">
+<nav class="side" id="side">
+  <div class="grp">시작</div>
+  <a href="#overview">개요 &amp; 핵심 개념</a>
+  <a href="#states">에이전트 상태</a>
+  <a href="#modes">모드 &amp; 클라이언트/서버</a>
+  <div class="grp">단축키</div>
+  <a href="#prefix">Prefix 개념</a>
+  <a href="#keys-core">필수 단축키 5개</a>
+  <a href="#keys-all">작업별 단축키</a>
+  <a href="#goto">Goto 피커</a>
+  <a href="#copymode">복사 모드</a>
+  <a href="#textfield">텍스트 필드 편집</a>
+  <a href="#keys-custom">단축키 변경 / Prefix-free</a>
+  <div class="grp">CLI 레퍼런스</div>
+  <a href="#cli-launch">실행 · 상태 · 업데이트</a>
+  <a href="#cli-machine">SSH 머신</a>
+  <a href="#cli-completion">셸 자동완성</a>
+  <a href="#cli-server">서버</a>
+  <a href="#cli-session">세션</a>
+  <a href="#cli-workspace">워크스페이스</a>
+  <a href="#cli-worktree">워크트리 (Git)</a>
+  <a href="#cli-tab">탭</a>
+  <a href="#cli-pane">패널 (Pane)</a>
+  <a href="#cli-pane-io">패널 읽기/입력</a>
+  <a href="#cli-pane-report">에이전트 상태·메타데이터 보고</a>
+  <a href="#cli-agent">에이전트</a>
+  <a href="#cli-terminal">터미널 직접 연결</a>
+  <a href="#cli-wait">출력 대기</a>
+  <a href="#cli-notify">알림</a>
+  <a href="#cli-integration">통합(Integrations)</a>
+  <a href="#cli-plugin">플러그인</a>
+  <a href="#cli-sources">읽기 소스</a>
+  <a href="#cli-env">환경 변수</a>
+  <div class="grp">설정</div>
+  <a href="#cfg-file">설정 파일 &amp; 리로드</a>
+  <a href="#cfg-terminal">터미널 기본값</a>
+  <a href="#cfg-keys">키바인딩 문법</a>
+  <a href="#cfg-command">커스텀 명령 단축키</a>
+  <a href="#cfg-theme">테마</a>
+  <a href="#cfg-ui">UI · 사이드바 · 상태바</a>
+  <a href="#cfg-notify">알림 · 사운드</a>
+  <a href="#cfg-adv">고급 (복원 · 한글 IME)</a>
+  <a href="#cfg-logs">로그</a>
+  <div class="grp">실전</div>
+  <a href="#recipes">자동화 레시피</a>
+</nav>
+
+<main id="main">
+
+<!-- ================= 개요 ================= -->
+<section id="overview" data-s>
+  <h2><span class="num">01</span>개요 &amp; 핵심 개념</h2>
+  <p><b>herdr</b>는 tmux/zellij 같은 <b>터미널 워크스페이스 매니저(멀티플렉서)</b>이면서, 그 안에서 돌아가는 <b>AI 코딩 에이전트</b>(Claude Code, Codex, Gemini 등)의 상태를 감지·관리하는 데 특화된 도구입니다. 실제 터미널 프로세스를 백그라운드 서버에서 계속 실행시키고, 그 위에 구조(워크스페이스·탭·패널)를 얹습니다.</p>
+  <p>마우스 네이티브라서 패널·탭·워크스페이스·에이전트를 클릭하고, 분할 경계를 드래그하고, 우클릭 메뉴를 쓰는 것만으로도 대부분 조작이 가능합니다. 키보드는 선택 사항입니다.</p>
+  <div class="cards">
+    <div class="card"><b>Session (세션)</b>영구적인 herdr 서버 네임스페이스. <code>herdr</code>는 기본 세션에 붙습니다. 완전히 분리된 환경이 필요할 때만 이름 있는 세션을 씁니다.</div>
+    <div class="card"><b>Workspace (워크스페이스)</b>최상위 프로젝트 컨테이너. 레포·작업·조사 하나당 하나. 내부 에이전트 상태가 사이드바에 합산되어 표시됩니다.</div>
+    <div class="card"><b>Tab (탭)</b>워크스페이스 안의 레이아웃. <code>agents</code>, <code>logs</code>, <code>server</code>, <code>review</code>처럼 뷰를 나눌 때.</div>
+    <div class="card"><b>Pane (패널)</b>실제 터미널. 오른쪽/아래로 분할, 이름 변경, CLI로 읽기·입력·닫기 가능. 클라이언트가 분리돼도 유지됩니다.</div>
+    <div class="card"><b>Agent (에이전트)</b>패널 안에서 herdr가 인식한 프로세스. 포그라운드 프로세스, 화면 매니페스트, 통합(integration)으로 감지.</div>
+  </div>
+  <div class="note">구조 요약: <b>Session ⊃ Workspace ⊃ Tab ⊃ Pane (⊃ Agent)</b>. 우선 워크스페이스로 나누고, 패널·소켓·런타임 상태까지 완전히 분리해야 할 때만 세션을 나누세요.</div>
+</section>
+
+<section id="states" data-s>
+  <h2><span class="num">02</span>에이전트 상태</h2>
+  <div class="tbl"><table>
+    <tr><th>상태</th><th>의미</th></tr>
+    <tr><td><span class="state" style="background:#e5534b"></span><code>blocked</code></td><td>입력·승인·결정이 필요함 (승인/질문 UI를 인식)</td></tr>
+    <tr><td><span class="state" style="background:#d4a72c"></span><code>working</code></td><td>에이전트가 작업 중</td></tr>
+    <tr><td><span class="state" style="background:#3fb950"></span><code>done</code></td><td>작업을 끝냈지만 아직 확인하지 않음</td></tr>
+    <tr><td><span class="state" style="background:#8b949e"></span><code>idle</code></td><td>완료 또는 대기 중이며 이미 확인함</td></tr>
+    <tr><td><span class="state" style="background:#6e40c9"></span><code>unknown</code></td><td>에이전트는 있지만 상태를 확신할 수 없음 (성공을 의미하지 않음)</td></tr>
+  </table></div>
+  <p class="muted"><code>idle</code>과 <code>done</code>은 둘 다 "입력 가능" 상태입니다. Done 배지는 클라이언트별로 따로 추적되므로, 한 클라이언트에서 봤다고 다른 클라이언트의 배지가 지워지지는 않습니다. CLI/API는 서버의 "확인됨" 상태를 따르며, <code>pane focus</code>/<code>agent focus</code>로 확인 처리됩니다(읽기만으로는 처리되지 않음).</p>
+</section>
+
+<section id="modes" data-s>
+  <h2><span class="num">03</span>모드 &amp; 클라이언트/서버</h2>
+  <h3>세 가지 모드</h3>
+  <div class="tbl"><table>
+    <tr><th>모드</th><th>동작</th></tr>
+    <tr><td>Terminal mode</td><td>키 입력을 포커스된 패널로 보냄 (기본 상태)</td></tr>
+    <tr><td>Prefix mode</td><td>Prefix 키(<kbd>ctrl+b</kbd>) 후 herdr 동작 하나를 기다림</td></tr>
+    <tr><td>Navigate mode</td><td>지속형 워크스페이스 탐색 화면 (<kbd>prefix+w</kbd>)</td></tr>
+  </table></div>
+  <p>그 밖에 <b>Copy mode</b>(<kbd>prefix+[</kbd>)와 <b>Resize mode</b>(<kbd>prefix+r</kbd>)가 있습니다.</p>
+  <h3>클라이언트와 서버</h3>
+  <p>herdr는 기본적으로 <b>백그라운드 서버 + 하나 이상의 클라이언트</b>로 동작합니다. 서버가 패널과 프로세스를 소유하고, 클라이언트는 그 서버에 붙은 터미널 UI입니다.</p>
+  <ul>
+    <li>클라이언트가 하나면 모든 탭이 그 크기를 따름</li>
+    <li>여러 클라이언트면 각자 다른 워크스페이스/탭을 볼 수 있고, 같은 탭을 보면 마지막으로 상호작용한 클라이언트가 크기를 결정</li>
+    <li><kbd>ctrl+b</kbd> <kbd>q</kbd> 로 분리(detach) → 서버와 에이전트는 계속 실행</li>
+    <li>세션 자체를 끝내려면 <code>herdr server stop</code></li>
+  </ul>
+</section>
+
+<!-- ================= 단축키 ================= -->
+<section id="prefix" data-s>
+  <h2><span class="num">04</span>Prefix 개념</h2>
+  <p>터미널 안의 프로그램들이 이미 대부분의 키 조합을 쓰고 있기 때문에(<kbd>ctrl+c</kbd> 중단, <kbd>ctrl+r</kbd> 히스토리 검색 등), herdr는 키 하나만 예약합니다. 기본 Prefix는 <kbd>ctrl+b</kbd>입니다.</p>
+  <div class="note"><b>prefix+c</b> = <kbd>ctrl+b</kbd>를 누르고 <u>떼었다가</u> <kbd>c</kbd>를 누름.<br>언제든 <kbd>prefix+?</kbd> 로 활성 단축키 전체를 볼 수 있고, 도움말 안에서 <kbd>/</kbd> 로 필터링(<kbd>Backspace</kbd> 편집, <kbd>ctrl+u</kbd> 지우기)합니다.</div>
+</section>
+
+<section id="keys-core" data-s>
+  <h2><span class="num">05</span>필수 단축키 5개</h2>
+  <p class="muted">이것만 알아도 일상적인 이동은 대부분 해결됩니다. 나머지는 마우스로 충분합니다.</p>
+  <div class="hero">
+    <div class="card"><b>새 탭</b><div class="k"><kbd>prefix+c</kbd></div></div>
+    <div class="card"><b>오른쪽 / 아래 분할</b><div class="k"><kbd>prefix+v</kbd> / <kbd>prefix+minus</kbd></div></div>
+    <div class="card"><b>패널 간 이동</b><div class="k"><kbd>prefix+h/j/k/l</kbd></div></div>
+    <div class="card"><b>워크스페이스 탐색</b><div class="k"><kbd>prefix+w</kbd></div></div>
+    <div class="card"><b>분리 (모두 계속 실행)</b><div class="k"><kbd>prefix+q</kbd></div></div>
+  </div>
+</section>
+
+<section id="keys-all" data-s>
+  <h2><span class="num">06</span>작업별 단축키 (기본값)</h2>
+  <h3>패널</h3>
+  <div class="tbl"><table>
+    <tr><th>동작</th><th>키</th><th>설정 키 이름</th></tr>
+    <tr><td>오른쪽으로 분할</td><td><kbd>prefix+v</kbd></td><td><code>split_vertical</code></td></tr>
+    <tr><td>아래로 분할</td><td><kbd>prefix+minus</kbd> (<kbd>-</kbd>)</td><td><code>split_horizontal</code></td></tr>
+    <tr><td>패널 포커스 이동 (좌/하/상/우)</td><td><kbd>prefix+h</kbd> <kbd>prefix+j</kbd> <kbd>prefix+k</kbd> <kbd>prefix+l</kbd></td><td><code>focus_pane_left/down/up/right</code></td></tr>
+    <tr><td>패널 확대(줌) 토글</td><td><kbd>prefix+z</kbd></td><td><code>zoom</code></td></tr>
+    <tr><td>패널 닫기</td><td><kbd>prefix+x</kbd></td><td></td></tr>
+    <tr><td>패널 위치 교체</td><td><kbd>prefix+shift+h/j/k/l</kbd></td><td></td></tr>
+    <tr><td>크기 조절 모드</td><td><kbd>prefix+r</kbd></td><td></td></tr>
+    <tr><td>복사 모드</td><td><kbd>prefix+[</kbd></td><td></td></tr>
+  </table></div>
+  <h3>탭</h3>
+  <div class="tbl"><table>
+    <tr><th>동작</th><th>키</th><th>설정 키 이름</th></tr>
+    <tr><td>새 탭</td><td><kbd>prefix+c</kbd></td><td><code>new_tab</code></td></tr>
+    <tr><td>다음 / 이전 탭</td><td><kbd>prefix+n</kbd> / <kbd>prefix+p</kbd></td><td><code>next_tab</code> / <code>previous_tab</code></td></tr>
+    <tr><td>탭 1~9로 바로 이동</td><td><kbd>prefix+1..9</kbd></td><td><code>switch_tab</code></td></tr>
+    <tr><td>탭 이름 변경</td><td><kbd>prefix+shift+t</kbd></td><td></td></tr>
+    <tr><td>탭 닫기</td><td><kbd>prefix+shift+x</kbd></td><td></td></tr>
+  </table></div>
+  <h3>워크스페이스 &amp; 세션</h3>
+  <div class="tbl"><table>
+    <tr><th>동작</th><th>키</th><th>설정 키 이름</th></tr>
+    <tr><td>워크스페이스 탐색 (Navigate 모드)</td><td><kbd>prefix+w</kbd></td><td></td></tr>
+    <tr><td>새 워크스페이스</td><td><kbd>prefix+shift+n</kbd></td><td></td></tr>
+    <tr><td>워크스페이스 이름 변경</td><td><kbd>prefix+shift+w</kbd></td><td></td></tr>
+    <tr><td>워크스페이스 닫기</td><td><kbd>prefix+shift+d</kbd></td><td></td></tr>
+    <tr><td>Goto 피커 (모든 에이전트/터미널 목록)</td><td><kbd>prefix+g</kbd></td><td><code>goto</code></td></tr>
+    <tr><td>사이드바 토글</td><td><kbd>prefix+b</kbd></td><td></td></tr>
+    <tr><td>단축키 도움말</td><td><kbd>prefix+?</kbd></td><td></td></tr>
+    <tr><td>분리 (detach)</td><td><kbd>prefix+q</kbd></td><td></td></tr>
+  </table></div>
+  <h3>설정으로 쓸 수 있는 인덱스 점프 (예시)</h3>
+  <div class="tbl"><table>
+    <tr><th>설정 키</th><th>예시 바인딩</th><th>동작</th></tr>
+    <tr><td><code>switch_tab</code></td><td><kbd>prefix+1..9</kbd></td><td>N번째 탭</td></tr>
+    <tr><td><code>switch_workspace</code></td><td><kbd>prefix+shift+1..9</kbd></td><td>N번째 워크스페이스</td></tr>
+    <tr><td><code>focus_agent</code></td><td><kbd>prefix+alt+1..9</kbd></td><td>N번째 에이전트</td></tr>
+  </table></div>
+  <h3>Navigate 모드 전용 키</h3>
+  <p><code>navigate_workspace_*</code>, <code>navigate_pane_*</code> 설정은 Navigate 모드 안에서만 동작하므로 <kbd>j</kbd>, <kbd>k</kbd> 같은 일반 키를 쓸 수 있습니다(예: <code>navigate_workspace_down = "j"</code>, <code>navigate_pane_down = "ctrl+j"</code>). 왼쪽/오른쪽 화살표는 항상 패널 좌/우 이동의 별칭입니다.</p>
+  <h3>마우스</h3>
+  <ul>
+    <li>패널·탭·워크스페이스·에이전트 클릭으로 포커스</li>
+    <li>분할 경계 드래그로 크기 조절, 우클릭 메뉴</li>
+    <li>마우스 드래그로 선택하면 복사 모드 없이 바로 복사</li>
+    <li>마우스 캡처 끄기: <code>[ui] mouse_capture = false</code></li>
+  </ul>
+</section>
+
+<section id="goto" data-s>
+  <h2><span class="num">07</span>Goto 피커 (<kbd>prefix+g</kbd>)</h2>
+  <p>모든 에이전트와 터미널을 워크스페이스별로 묶어 한 줄씩 보여줍니다. 분할된 탭의 패널도 각각 별도 행으로 나옵니다.</p>
+  <div class="tbl"><table>
+    <tr><th>키</th><th>동작</th></tr>
+    <tr><td><kbd>Enter</kbd> / 클릭</td><td>해당 위치로 바로 이동</td></tr>
+    <tr><td><kbd>/</kbd></td><td>검색 (이름·에이전트 종류·탭·워크스페이스·브랜치·경로)</td></tr>
+    <tr><td><kbd>↑</kbd><kbd>↓</kbd> 또는 <kbd>j</kbd><kbd>k</kbd></td><td>행 이동 (검색 입력 중이 아닐 때)</td></tr>
+    <tr><td><kbd>←</kbd><kbd>→</kbd></td><td>이전/다음 워크스페이스 섹션의 첫 항목으로 (검색 중에는 커서 이동)</td></tr>
+    <tr><td><kbd>b</kbd> <kbd>w</kbd> <kbd>i</kbd> <kbd>d</kbd></td><td>blocked / working / idle / done 에이전트만 필터</td></tr>
+    <tr><td><kbd>a</kbd></td><td>전체 터미널 다시 보기</td></tr>
+  </table></div>
+  <div class="note">팁: 에이전트를 여러 개 돌릴 때 <kbd>prefix+g</kbd> → <kbd>b</kbd> 로 승인이 필요한(blocked) 에이전트만 골라 처리하면 효율적입니다.</div>
+</section>
+
+<section id="copymode" data-s>
+  <h2><span class="num">08</span>복사 모드 (<kbd>prefix+[</kbd>)</h2>
+  <div class="tbl"><table>
+    <tr><th>분류</th><th>키</th></tr>
+    <tr><td>이동</td><td><kbd>h</kbd><kbd>j</kbd><kbd>k</kbd><kbd>l</kbd>, 단어 <kbd>w</kbd><kbd>b</kbd><kbd>e</kbd>, 큰 단어 <kbd>W</kbd><kbd>B</kbd><kbd>E</kbd>, 문단 <kbd>{</kbd><kbd>}</kbd></td></tr>
+    <tr><td>페이지</td><td><kbd>PageUp</kbd>/<kbd>PageDown</kbd>, <kbd>ctrl+b</kbd>/<kbd>ctrl+f</kbd>, 반 페이지 <kbd>ctrl+u</kbd>/<kbd>ctrl+d</kbd></td></tr>
+    <tr><td>검색</td><td><kbd>/</kbd> 정방향, <kbd>?</kbd> 역방향, <kbd>n</kbd>/<kbd>N</kbd> 반복 (대문자 포함 시 대소문자 구분)</td></tr>
+    <tr><td>선택 시작</td><td><kbd>v</kbd> 또는 <kbd>Space</kbd> (<kbd>V</kbd>도 지원)</td></tr>
+    <tr><td>복사</td><td><kbd>y</kbd> 또는 <kbd>Enter</kbd></td></tr>
+    <tr><td>나가기</td><td><kbd>q</kbd> 또는 <kbd>Esc</kbd> (Esc는 선택/검색을 먼저 해제)</td></tr>
+  </table></div>
+  <div class="warn">기본 prefix가 <kbd>ctrl+b</kbd>이므로 복사 모드에서 <kbd>ctrl+b</kbd>는 페이지 업이 아니라 prefix 모드로 진입합니다. 복사 모드에서 ctrl+b 페이지 업을 쓰려면 prefix를 다른 키로 바꾸세요.<br>복사 모드 중에도 패널 프로세스는 멈추지 않고 출력이 계속 갱신됩니다.</div>
+</section>
+
+<section id="textfield" data-s>
+  <h2><span class="num">09</span>텍스트 필드 편집</h2>
+  <p class="muted">herdr의 이름 입력창, 워크트리 브랜치 입력, 필터, 복사 모드 검색 등 <b>herdr 자체 입력란</b>에만 적용됩니다(패널 안 셸에는 해당 없음).</p>
+  <div class="tbl"><table>
+    <tr><th>동작</th><th>키</th></tr>
+    <tr><td>한 글자 이동</td><td><kbd>←</kbd>/<kbd>→</kbd>, <kbd>ctrl+b</kbd>/<kbd>ctrl+f</kbd></td></tr>
+    <tr><td>처음 / 끝</td><td><kbd>Home</kbd>/<kbd>End</kbd>, <kbd>ctrl+a</kbd>/<kbd>ctrl+e</kbd></td></tr>
+    <tr><td>단어 이동</td><td><kbd>alt+b</kbd>/<kbd>alt+f</kbd></td></tr>
+    <tr><td>앞 글자 삭제</td><td><kbd>Backspace</kbd>, <kbd>ctrl+h</kbd></td></tr>
+    <tr><td>뒤 글자 삭제</td><td><kbd>Delete</kbd>, <kbd>ctrl+d</kbd></td></tr>
+    <tr><td>처음까지 / 끝까지 잘라내기</td><td><kbd>ctrl+u</kbd> / <kbd>ctrl+k</kbd></td></tr>
+    <tr><td>앞 단어 잘라내기</td><td><kbd>ctrl+w</kbd>, <kbd>alt+Backspace</kbd>, <kbd>ctrl+Backspace</kbd></td></tr>
+    <tr><td>뒤 단어 잘라내기</td><td><kbd>alt+d</kbd></td></tr>
+    <tr><td>마지막 잘라낸 텍스트 붙이기</td><td><kbd>ctrl+y</kbd></td></tr>
+  </table></div>
+</section>
+
+<section id="keys-custom" data-s>
+  <h2><span class="num">10</span>단축키 변경 / Prefix-free 설정</h2>
+  <h3>Prefix 바꾸기</h3>
+<pre><code>[keys]
+prefix = "ctrl+a"
+<span class="c"># 여러 개도 가능 (첫 번째가 상태바에 표시되는 기본 prefix)</span>
+prefix = ["ctrl+space", "ctrl+s"]</code></pre>
+  <h3>Prefix 없이 바로 쓰는 단축키 추가</h3>
+  <p><kbd>ctrl+alt</kbd> 조합은 대부분의 터미널(Ghostty, iTerm2, kitty, WezTerm, Windows Terminal 등)과 OS에서 비어 있어 안전한 편입니다. 아래 설정은 prefix 바인딩을 유지하면서 직접 단축키를 덧붙입니다.</p>
+<pre><code>[keys]
+focus_pane_left  = ["prefix+h", "ctrl+alt+h"]
+focus_pane_down  = ["prefix+j", "ctrl+alt+j"]
+focus_pane_up    = ["prefix+k", "ctrl+alt+k"]
+focus_pane_right = ["prefix+l", "ctrl+alt+l"]
+previous_tab     = ["prefix+p", "ctrl+alt+["]
+next_tab         = ["prefix+n", "ctrl+alt+]"]
+new_tab          = ["prefix+c", "ctrl+alt+c"]
+split_vertical   = ["prefix+v", "ctrl+alt+d"]
+split_horizontal = ["prefix+minus", "ctrl+alt+shift+d"]
+zoom             = ["prefix+z", "ctrl+alt+z"]</code></pre>
+  <h3>tmux 스타일 원키 패널 크기 조절 (선택 액션)</h3>
+<pre><code>[keys]
+resize_pane_left  = "ctrl+shift+alt+left"
+resize_pane_down  = "ctrl+shift+alt+down"
+resize_pane_up    = "ctrl+shift+alt+up"
+resize_pane_right = "ctrl+shift+alt+right"</code></pre>
+  <h3>피해야 할 ctrl+alt 조합</h3>
+  <div class="tbl"><table>
+    <tr><th>조합</th><th>선점한 곳</th></tr>
+    <tr><td><kbd>ctrl+alt+방향키</kbd></td><td>GNOME 워크스페이스 전환, Ghostty·Konsole 기본값</td></tr>
+    <tr><td><kbd>ctrl+alt+t</kbd></td><td>Ubuntu/Fedora "터미널 열기"</td></tr>
+    <tr><td><kbd>ctrl+alt+l</kbd> / <kbd>ctrl+alt+a</kbd></td><td>KDE 화면 잠금 / attention window</td></tr>
+    <tr><td><kbd>ctrl+alt+s</kbd> / <kbd>ctrl+alt+u</kbd></td><td>Konsole</td></tr>
+    <tr><td><kbd>ctrl+alt+f1..f12</kbd></td><td>Linux 가상 콘솔 전환</td></tr>
+  </table></div>
+  <div class="warn">macOS에서는 일반 <kbd>alt</kbd> 조합이 특수문자로 합성되는 경우가 많고, <kbd>ctrl+j</kbd>는 셸에서 Enter로 취급됩니다. 직접 단축키가 동작하지 않으면 터미널/OS가 먼저 가로챈 것이니 한쪽을 다시 바인딩하세요.<br>예전 커스텀 키를 버리고 새 기본값을 쓰려면 <code>herdr config reset-keys</code> (config.toml 백업 후 <code>[keys]</code> 제거).</div>
+</section>
+
+<!-- ================= CLI ================= -->
+<section id="cli-launch" data-s>
+  <h2><span class="num">11</span>CLI · 실행 · 상태 · 업데이트</h2>
+  <p class="muted">CLI는 실행 중인 서버와 로컬 소켓 API로 통신합니다. 대부분 명령은 스크립트 자동화를 위해 JSON으로 응답합니다.</p>
+<pre><code>herdr                         <span class="c"># 기본 세션 실행 또는 연결</span>
+herdr --session work          <span class="c"># 이름 있는 세션 사용</span>
+herdr --remote workbox        <span class="c"># SSH로 원격 연결 (로컬 키바인딩 사용)</span>
+herdr --remote workbox --remote-keybindings server  <span class="c"># 서버 쪽 키바인딩 사용</span>
+herdr --default-config        <span class="c"># 기본 설정 출력</span>
+herdr update                  <span class="c"># 설정된 채널에서 다운로드·설치</span>
+herdr channel show            <span class="c"># stable / preview 확인</span>
+herdr channel set preview     <span class="c"># 프리뷰 빌드 구독</span>
+herdr channel set stable      <span class="c"># 안정판으로 복귀</span>
+herdr --version               <span class="c"># 버전 출력</span>
+
+herdr status                  <span class="c"># 상태</span>
+herdr status server
+herdr status client
+
+herdr api schema              <span class="c"># 소켓 프로토콜 스키마 요약</span>
+herdr api schema --json       <span class="c"># 전체 JSON Schema</span>
+herdr api schema --output herdr-api.schema.json</code></pre>
+  <p class="muted">실험적 라이브 핸드오프는 <code>herdr --remote</code> 또는 <code>herdr update</code>에 <code>--handoff</code>를 명시해야 합니다.</p>
+</section>
+
+<section id="cli-machine" data-s>
+  <h2><span class="num">12</span>저장된 SSH 머신</h2>
+<pre><code>herdr machine list [--json]
+herdr machine add workbox [--label "Build machine"] [--remote-session &lt;n&gt;]
+herdr machine rename &lt;profile-id&gt; --label "New name"
+herdr machine disable &lt;profile-id&gt;
+herdr machine enable &lt;profile-id&gt;
+herdr machine remove &lt;profile-id&gt;
+herdr machine status [&lt;label-or-id&gt;] [--json]   <span class="c"># SSH·원격 herdr 점검</span>
+herdr machine reconnect &lt;label-or-id&gt;          <span class="c"># SSH 재인증/검증</span></code></pre>
+  <ul>
+    <li><code>machine add</code>는 원격 설치 상태를 확인하고, 필요할 때만 승인 후 설치/업데이트한 뒤 세션 서버를 시작합니다.</li>
+    <li>비밀번호·개인키 등 SSH 자격증명은 저장하지 않습니다.</li>
+    <li>머신 제거/비활성화는 연결만 끊고 원격 세션은 계속 실행됩니다.</li>
+  </ul>
+  <h3>다른 머신으로 명령 보내기 (<code>--machine</code> 전역 prefix)</h3>
+<pre><code>herdr --machine "Build machine" agent list
+herdr --machine &lt;profile-id&gt; pane list
+herdr --machine "Build machine" agent prompt w1:p1 "review this change"
+herdr --machine "Build machine" worktree create --cwd /srv/project --branch review</code></pre>
+  <div class="warn">UI에서 머신을 선택해도 CLI 대상은 바뀌지 않습니다. <code>--machine</code>은 <code>--session</code>/<code>--remote</code>와 함께 쓸 수 없고, 원격에서는 <code>--current</code>로 로컬 패널을 가리킬 수 없습니다. 지원 명령: workspace, worktree, tab, pane, notification, agent(attach 제외), api snapshot, status server, 일부 server/plugin 명령.</div>
+</section>
+
+<section id="cli-completion" data-s>
+  <h2><span class="num">13</span>셸 자동완성</h2>
+<pre><code>herdr completion zsh | bash | fish | powershell | elvish
+<span class="c"># completions 는 별칭</span>
+
+<span class="c"># 임시 (현재 zsh 세션)</span>
+source &lt;(herdr completion zsh)
+
+<span class="c"># 영구 설정</span>
+mkdir -p ~/.zfunc
+herdr completion zsh &gt; ~/.zfunc/_herdr
+<span class="c"># ~/.zshrc 에 추가:</span>
+fpath=(~/.zfunc $fpath)
+autoload -Uz compinit
+compinit</code></pre>
+</section>
+
+<section id="cli-server" data-s>
+  <h2><span class="num">14</span>서버</h2>
+<pre><code>herdr server                          <span class="c"># 헤드리스 서버를 명시적으로 실행 (서비스용)</span>
+herdr server stop                     <span class="c"># 서버 종료 = 세션의 모든 패널 종료</span>
+herdr server reload-config            <span class="c"># 패널 재시작 없이 설정 반영</span>
+herdr server agent-manifests [--json] <span class="c"># 에이전트 감지 매니페스트 상태</span>
+herdr server update-agent-manifests [--json]  <span class="c"># 원격 매니페스트 즉시 업데이트</span>
+herdr server reload-agent-manifests   <span class="c"># 로컬 오버라이드 수정 후 리로드</span></code></pre>
+</section>
+
+<section id="cli-session" data-s>
+  <h2><span class="num">15</span>세션</h2>
+<pre><code>herdr session list [--json]
+herdr session attach &lt;n&gt;
+herdr session stop &lt;n&gt; [--json]      <span class="c"># 기본 세션은 이름 "default"</span>
+herdr session delete &lt;n&gt; [--json]</code></pre>
+</section>
+
+<section id="cli-workspace" data-s>
+  <h2><span class="num">16</span>워크스페이스</h2>
+<pre><code>herdr workspace list
+herdr workspace create [--cwd PATH] [--label TEXT] [--env KEY=VALUE] [--focus] [--no-focus]
+herdr workspace get &lt;workspace_id&gt;
+herdr workspace focus &lt;workspace_id&gt;
+herdr workspace rename &lt;workspace_id&gt; &lt;label&gt;
+herdr workspace report-metadata &lt;workspace_id&gt; --source ID [--token NAME=VALUE] [--clear-token NAME] [--seq N] [--ttl-ms N]
+herdr workspace close &lt;workspace_id&gt; [--group]
+
+<span class="c"># 포커스를 뺏지 않고 생성</span>
+herdr workspace create --cwd ~/project --label api --no-focus</code></pre>
+  <p>생성 시 첫 탭과 루트 패널도 함께 만들어지며, JSON 응답의 <code>.result.workspace.workspace_id</code>, <code>.result.tab.tab_id</code>, <code>.result.root_pane.pane_id</code>로 ID를 얻습니다.</p>
+</section>
+
+<section id="cli-worktree" data-s>
+  <h2><span class="num">17</span>워크트리 (Git)</h2>
+<pre><code>herdr worktree list   [--workspace ID | --cwd PATH] [--trust-repository]
+herdr worktree create [--workspace ID | --cwd PATH] [--branch NAME] [--base REF] [--path PATH] [--label TEXT] [--focus] [--no-focus] [--trust-repository]
+herdr worktree open   [--workspace ID | --cwd PATH] (--path PATH | --branch NAME) [--label TEXT] [--focus] [--no-focus] [--trust-repository]
+herdr worktree remove --workspace ID [--force] [--trust-repository]</code></pre>
+  <ul>
+    <li>워크트리 = Git 체크아웃 출처를 가진 일반 워크스페이스. 부모 레포 워크스페이스 아래에 그룹으로 묶입니다.</li>
+    <li><code>--branch</code>가 기존 로컬 브랜치면 체크아웃, 없으면 <code>--base</code>(또는 HEAD)에서 새로 만듭니다.</li>
+    <li><code>--path</code> 생략 시 <code>&lt;worktrees.directory&gt;/&lt;repo&gt;/&lt;branch-slug&gt;</code>에 생성.</li>
+    <li><code>workspace close</code>는 herdr 상태만 닫습니다. 체크아웃 삭제는 <code>worktree remove</code> (브랜치는 절대 삭제 안 함, dirty면 <code>--force</code>).</li>
+    <li>연결된 워크트리가 열린 상태로 기본 워크스페이스를 닫으려면 <code>--group</code> 필요.</li>
+  </ul>
+</section>
+
+<section id="cli-tab" data-s>
+  <h2><span class="num">18</span>탭</h2>
+<pre><code>herdr tab list [--workspace &lt;workspace_id&gt;]
+herdr tab create [--workspace &lt;workspace_id&gt;] [--cwd PATH] [--label TEXT] [--env KEY=VALUE] [--focus] [--no-focus]
+herdr tab get &lt;tab_id&gt;
+herdr tab focus &lt;tab_id&gt;
+herdr tab rename &lt;tab_id&gt; &lt;label&gt;
+herdr tab close &lt;tab_id&gt;</code></pre>
+  <p class="muted"><code>--workspace</code> 생략 시 활성 워크스페이스 사용. 워크스페이스의 마지막 탭을 닫으면 워크스페이스도 닫힙니다. 생성/분할은 기본적으로 포커스를 바꾸지 않으며, <code>--focus</code>로 이동합니다. <code>--cwd</code> 생략 시 <code>terminal.new_cwd</code> 정책을 따릅니다.</p>
+</section>
+
+<section id="cli-pane" data-s>
+  <h2><span class="num">19</span>패널 (Pane)</h2>
+<pre><code>herdr pane list [--workspace &lt;workspace_id&gt;]
+herdr pane current [--pane ID|--current]
+herdr pane get &lt;pane_id&gt;
+herdr pane layout [--pane ID|--current]
+herdr pane process-info [--pane ID|--current]
+herdr pane neighbor --direction left|right|up|down [--pane ID|--current]
+herdr pane edges [--pane ID|--current]
+herdr pane focus --direction left|right|up|down [--pane ID|--current]
+herdr pane resize --direction left|right|up|down [--amount FLOAT] [--pane ID|--current]
+herdr pane zoom [&lt;pane_id&gt;|--pane ID|--current] [--toggle|--on|--off]
+herdr pane rename &lt;pane_id&gt; &lt;label&gt;|--clear
+herdr pane input [&lt;pane_id&gt;|--pane ID|--current] --right-click herdr|pane
+herdr pane split [&lt;pane_id&gt;|--pane ID|--current] --direction right|down [--ratio FLOAT] [--cwd PATH] [--env KEY=VALUE] [--right-click herdr|pane] [--focus] [--no-focus]
+herdr pane swap --direction left|right|up|down [--pane ID|--current]
+herdr pane swap --source-pane ID --target-pane ID
+herdr pane move &lt;pane_id&gt; --tab &lt;tab_id&gt; --split right|down [--target-pane ID] [--ratio FLOAT] [--focus|--no-focus]
+herdr pane move &lt;pane_id&gt; --new-tab [--workspace ID] [--label TEXT] [--focus|--no-focus]
+herdr pane move &lt;pane_id&gt; --new-workspace [--label TEXT] [--tab-label TEXT] [--focus|--no-focus]
+herdr pane close &lt;pane_id&gt;</code></pre>
+  <ul>
+    <li><code>--current</code>는 herdr 패널 안에서 실행 시 <code>HERDR_PANE_ID</code>를 사용합니다.</li>
+    <li><code>pane split</code>에서 대상 생략 시 호출한 패널(없으면 포커스된 패널)을 분할. 새 패널 ID는 <code>.result.pane.pane_id</code>.</li>
+    <li><code>--right-click pane</code>: 마우스 리포팅 앱에 우클릭 전달 / <code>herdr</code>: herdr 메뉴 복원.</li>
+    <li><code>pane move</code> 후에는 <code>.result.move_result.pane.pane_id</code>를 사용 (이전 ID는 별칭으로 유지).</li>
+  </ul>
+</section>
+
+<section id="cli-pane-io" data-s>
+  <h2><span class="num">20</span>패널 읽기 / 입력</h2>
+  <h3>출력 읽기</h3>
+<pre><code>herdr pane read &lt;pane_id&gt; [--source visible|recent|recent-unwrapped|detection] [--lines N] [--format text|ansi] [--ansi] [--raw]
+herdr pane read &lt;pane_id&gt; --source visible --ansi
+herdr pane read &lt;pane_id&gt; --source recent-unwrapped --lines 120</code></pre>
+  <p class="muted">ANSI 이스케이프는 기본 제거. recent 계열은 기본 80행.</p>
+  <h3>입력 보내기</h3>
+<pre><code>herdr pane send-text &lt;pane_id&gt; &lt;text&gt;          <span class="c"># 텍스트만 (Enter 없음)</span>
+herdr pane send-keys &lt;pane_id&gt; &lt;key&gt; [key ...]  <span class="c"># 키 입력</span>
+herdr pane run &lt;pane_id&gt; &lt;command&gt;             <span class="c"># 명령 + Enter 원자적 제출 (권장)</span></code></pre>
+  <p><b>키 문법:</b> <code>a</code> 같은 일반 키, <code>enter</code> <code>tab</code> <code>esc</code> <code>backspace</code> <code>left</code> <code>right</code> <code>up</code> <code>down</code>, 조합 <code>ctrl+h</code> <code>alt+x</code> <code>shift+tab</code>, <code>f1</code>, 구두점 이름 <code>minus</code> <code>plus</code> <code>backtick</code>. <code>C-c</code>는 <code>ctrl+c</code> 별칭, <code>escape</code>도 허용.</p>
+</section>
+
+<section id="cli-pane-report" data-s>
+  <h2><span class="num">21</span>에이전트 상태 · 메타데이터 보고 (커스텀 훅용)</h2>
+<pre><code>herdr pane report-agent &lt;pane_id&gt; \
+  --source ID --agent LABEL \
+  --state idle|working|blocked|unknown \
+  [--message TEXT] [--seq N] \
+  [--agent-session-id ID] [--agent-session-path PATH] \
+  [-- RESUME_COMMAND...]
+
+herdr pane report-agent-session &lt;pane_id&gt; --source ID --agent LABEL [--seq N] \
+  [--agent-session-id ID] [--agent-session-path PATH] [--session-start-source SOURCE] [-- RESUME_COMMAND...]
+
+herdr pane release-agent &lt;pane_id&gt; --source ID --agent LABEL [--seq N]</code></pre>
+  <p class="muted"><code>--</code> 뒤 인자는 서버 재시작 후 세션을 재개할 명령입니다(PATH의 일반 명령, 아포스트로피 불가).</p>
+  <h3>표시용 메타데이터 (사이드바 토큰)</h3>
+<pre><code>herdr pane report-metadata &lt;pane_id&gt; \
+  --source ID [--agent LABEL] [--applies-to-source ID] \
+  [--title TEXT|--clear-title] \
+  [--display-agent TEXT|--clear-display-agent] \
+  [--state-label STATUS=TEXT] [--clear-state-labels] \
+  [--token NAME=VALUE] [--clear-token NAME] \
+  [--seq N] [--ttl-ms N]
+
+<span class="c"># 예: 사이드바의 $model, $summary 토큰 채우기</span>
+herdr pane report-metadata $HERDR_PANE_ID --source my-hook \
+  --token model=opus --token summary="reviewing authentication"</code></pre>
+  <p class="muted">값은 공백 정리·제어문자 제거 후 80자로 제한. <code>--ttl-ms</code>는 1~86400000. <code>--seq</code>로 같은 source의 오래된 보고를 무시.</p>
+</section>
+
+<section id="cli-agent" data-s>
+  <h2><span class="num">22</span>에이전트</h2>
+<pre><code>herdr agent list
+herdr agent get &lt;target&gt;
+herdr agent read &lt;target&gt; [--source visible|recent|recent-unwrapped|detection] [--lines N] [--format text|ansi] [--ansi]
+herdr agent send-keys &lt;target&gt; &lt;key&gt; [key ...]
+herdr agent prompt &lt;target&gt; &lt;text&gt; [--wait] [--until STATUS]... [--timeout MS]
+herdr agent rename &lt;target&gt; &lt;n&gt;|--clear
+herdr agent focus &lt;target&gt;
+herdr agent wait &lt;target&gt; [--until STATUS]... [--timeout MS]
+herdr agent attach &lt;target&gt; [--takeover]
+herdr agent start &lt;n&gt; --kind KIND --pane ID [--timeout MS] [-- &lt;agent-args...&gt;]
+herdr agent explain &lt;target&gt; [--json|--verbose]
+herdr agent explain --file PATH --agent LABEL [--json|--verbose]</code></pre>
+  <h3>핵심 규칙</h3>
+  <ul>
+    <li><b>target</b> = 고유한 에이전트 이름 또는 에이전트가 있는 패널 ID.</li>
+    <li><code>agent start</code>: 셸이 포그라운드인 빈 패널에서 에이전트를 실행. 이름은 <code>[a-z][a-z0-9_-]{0,31}</code>. 기본 타임아웃 30000ms (3000 초과 ~ 300000 이하).</li>
+    <li>지원 kind: <code>pi</code> <code>claude</code> <code>codex</code> <code>gemini</code> <code>cursor</code> <code>devin</code> <code>agy</code> <code>cline</code> <code>omp</code> <code>mastracode</code> <code>opencode</code> <code>copilot</code> <code>kimi</code> <code>kiro</code> <code>droid</code> <code>amp</code> <code>grok</code> <code>hermes</code> <code>kilo</code> <code>qodercli</code> <code>qwen</code> <code>letta</code> <code>maki</code> <code>muse</code></li>
+    <li><code>agent prompt</code>: 텍스트 + Enter를 한 번에 제출. 이미 <code>blocked</code>면 <code>agent_blocked</code> 반환. <code>--wait</code> 시 5초 안에 working/blocked가 관측되지 않으면 <code>agent_prompt_stalled</code>.</li>
+    <li><code>--until</code> 기본값은 <code>idle</code>, <code>done</code>, <code>blocked</code>. <code>--until</code>은 <code>--wait</code>와 함께만 사용.</li>
+    <li><code>agent explain</code>: 서버가 상태를 어떻게 판정했는지 설명 (이슈 리포트에 <code>--json</code>).</li>
+  </ul>
+  <div class="note">일반 터미널·서버·테스트·셸에는 <code>pane send-text / send-keys / run</code>과 <code>terminal attach</code>를, 코딩 에이전트에는 <code>agent</code> 명령을 쓰세요.</div>
+</section>
+
+<section id="cli-terminal" data-s>
+  <h2><span class="num">23</span>터미널 직접 연결</h2>
+<pre><code>herdr terminal attach &lt;terminal_id&gt; [--takeover]
+herdr terminal session control &lt;target&gt; [--takeover] [--cols N] [--rows N]   <span class="c"># 쓰기 가능 스트림</span>
+herdr terminal session observe &lt;target&gt; [--cols N] [--rows N]               <span class="c"># 읽기 전용 스트림</span>
+herdr terminal title set &lt;title&gt;
+herdr terminal title clear</code></pre>
+  <div class="tbl"><table>
+    <tr><th>키</th><th>동작</th></tr>
+    <tr><td><kbd>ctrl+b</kbd> <kbd>q</kbd></td><td>직접 연결에서 분리</td></tr>
+    <tr><td><kbd>ctrl+b</kbd> <kbd>ctrl+b</kbd></td><td>문자 그대로 <kbd>ctrl+b</kbd> 전송</td></tr>
+  </table></div>
+  <p class="muted"><code>control</code>은 stdin으로 줄 단위 JSON 명령(<code>terminal.input</code>, <code>terminal.resize</code>, <code>terminal.scroll</code>, <code>terminal.mouse</code>, <code>terminal.release</code>)을 받고, stdout으로 <code>terminal.frame</code>(base64 ANSI)과 <code>terminal.closed</code>를 출력합니다. 컨트롤러는 하나만, 관찰자(observe)는 여러 개 가능.</p>
+<pre><code>{"type":"terminal.mouse","action":"down","button":"left","column":12,"row":5}</code></pre>
+</section>
+
+<section id="cli-wait" data-s>
+  <h2><span class="num">24</span>출력 대기</h2>
+<pre><code>herdr pane wait-output &lt;pane_id&gt; (--match &lt;text&gt; | --regex &lt;pattern&gt;) \
+  [--source visible|recent|recent-unwrapped] [--lines N] [--timeout MS] [--raw]
+
+<span class="c"># 예: 개발 서버가 뜰 때까지 대기 (최대 60초)</span>
+herdr pane wait-output w1:p2 --match "ready on http" --timeout 60000</code></pre>
+  <ul>
+    <li>이미 출력된 내용도 즉시 검사한 뒤 일치할 때까지 폴링. 한 줄 단위 매칭 (<code>--regex</code>는 Rust 정규식).</li>
+    <li><code>--timeout</code> 생략 시 무기한 대기.</li>
+    <li>타임아웃/서버 오류 → stderr에 JSON, 종료 코드 <b>1</b> / CLI 사용 오류 → 종료 코드 <b>2</b>.</li>
+  </ul>
+</section>
+
+<section id="cli-notify" data-s>
+  <h2><span class="num">25</span>알림</h2>
+<pre><code>herdr notification show &lt;title&gt; [--body TEXT] \
+  [--position top-left|top-right|bottom-left|bottom-right] \
+  [--sound none|done|request]
+
+<span class="c"># 예: 빌드 끝나면 알림</span>
+make build &amp;&amp; herdr notification show "빌드 완료" --body "release 성공" --sound done</code></pre>
+  <p class="muted"><code>[ui.toast]</code> 전달 방식을 따르며, <code>--position</code>은 herdr 앱 내 토스트에만 적용됩니다.</p>
+</section>
+
+<section id="cli-integration" data-s>
+  <h2><span class="num">26</span>통합 (Integrations)</h2>
+  <p>공식 통합을 설치하면 에이전트 상태 감지가 정확해지고, 서버 재시작 후 에이전트 대화를 재개할 수 있습니다.</p>
+<pre><code>herdr integration install &lt;agent&gt;
+herdr integration uninstall &lt;agent&gt;
+herdr integration status [--outdated-only]
+
+<span class="c"># 예</span>
+herdr integration install claude
+herdr integration install codex</code></pre>
+  <p class="muted">지원: <code>pi</code> <code>omp</code> <code>claude</code> <code>codex</code> <code>copilot</code> <code>devin</code> <code>droid</code> <code>kimi</code> <code>opencode</code> <code>kilo</code> <code>hermes</code> <code>qodercli</code> <code>qwen</code> <code>letta</code> <code>cursor</code> <code>mastracode</code> <code>grok</code></p>
+</section>
+
+<section id="cli-plugin" data-s>
+  <h2><span class="num">27</span>플러그인</h2>
+<pre><code><span class="c"># 설치 / 목록 / 제거</span>
+herdr plugin install &lt;owner&gt;/&lt;repo&gt;[/subdir...] [--ref REF] [--yes]
+herdr plugin list [--plugin ID] [--json]
+herdr plugin uninstall &lt;plugin_id|owner/repo[/subdir...]&gt;
+herdr plugin enable &lt;plugin_id&gt;
+herdr plugin disable &lt;plugin_id&gt;
+
+<span class="c"># 로컬 개발</span>
+herdr plugin link &lt;path&gt; [--disabled]
+herdr plugin unlink &lt;plugin_id&gt;
+herdr plugin config-dir &lt;plugin_id&gt;
+
+<span class="c"># 액션 / 로그</span>
+herdr plugin action list [--plugin ID]
+herdr plugin action invoke &lt;action_id&gt; [--plugin ID]
+herdr plugin log list [--plugin ID] [--limit N]
+
+<span class="c"># 관리형 터미널 패널</span>
+herdr plugin pane open --plugin ID --entrypoint ID [--placement overlay|popup|split|tab|zoomed] \
+  [--width SIZE] [--height SIZE] [--workspace ID] [--target-pane PANE] [--direction right|down] \
+  [--cwd PATH] [--env KEY=VALUE] [--focus|--no-focus]
+herdr plugin pane focus &lt;pane_id&gt;
+herdr plugin pane close &lt;pane_id&gt;
+
+<span class="c"># 예</span>
+herdr plugin install ogulcancelik/herdr-plugin-examples/worktree-bootstrap</code></pre>
+  <p class="muted">GitHub 단축 표기만 지원, 설치 시 신뢰 미리보기 표시. 플러그인 설치/활성 상태는 사용자 전역(모든 세션 공유). 매니페스트에 <code>min_herdr_version</code> 필수.</p>
+</section>
+
+<section id="cli-sources" data-s>
+  <h2><span class="num">28</span>읽기 소스</h2>
+  <div class="tbl"><table>
+    <tr><th>소스</th><th>의미</th></tr>
+    <tr><td><code>visible</code></td><td>현재 렌더링된 화면. UI 피드백 루프에 적합</td></tr>
+    <tr><td><code>recent</code></td><td>최근 스크롤백 (터미널 줄바꿈 포함)</td></tr>
+    <tr><td><code>recent-unwrapped</code></td><td>소프트 줄바꿈 없는 최근 스크롤백. 로그에 적합</td></tr>
+    <tr><td><code>detection</code></td><td>에이전트 화면 감지에 쓰는 하단 버퍼 스냅샷</td></tr>
+  </table></div>
+</section>
+
+<section id="cli-env" data-s>
+  <h2><span class="num">29</span>환경 변수</h2>
+  <div class="tbl"><table>
+    <tr><th>변수</th><th>용도</th></tr>
+    <tr><td><code>HERDR_CONFIG_PATH</code></td><td>설정 파일 경로 변경</td></tr>
+    <tr><td><code>HERDR_SESSION</code></td><td>CLI 명령에 쓸 이름 있는 세션 선택</td></tr>
+    <tr><td><code>HERDR_SOCKET_PATH</code></td><td>저수준 소켓 경로 지정</td></tr>
+    <tr><td><code>HERDR_PROCESS_DETECTION</code></td><td>Linux 프로세스 감지: <code>native</code>(기본) / <code>child-groups</code></td></tr>
+    <tr><td><code>HERDR_ENV</code></td><td>herdr 관리 패널 안에서 <code>1</code></td></tr>
+    <tr><td><code>HERDR_PANE_ID</code> / <code>HERDR_TAB_ID</code> / <code>HERDR_WORKSPACE_ID</code></td><td>현재 패널 프로세스의 ID</td></tr>
+    <tr><td><code>HERDR_LOG</code></td><td>로그 필터, 예: <code>HERDR_LOG=herdr=debug</code></td></tr>
+    <tr><td><code>HERDR_DISABLE_SOUND</code></td><td>소리 알림 강제 비활성화</td></tr>
+  </table></div>
+  <p class="muted">새 패널은 <code>TERM_PROGRAM=herdr</code>, <code>TERM=xterm-256color</code>, <code>COLORTERM=truecolor</code>로 식별됩니다. 커스텀 명령에는 <code>HERDR_ACTIVE_WORKSPACE_ID</code>, <code>HERDR_ACTIVE_TAB_ID</code>, <code>HERDR_ACTIVE_PANE_ID</code>, <code>HERDR_ACTIVE_PANE_CWD</code>, <code>HERDR_BIN_PATH</code>도 전달됩니다.</p>
+</section>
+
+<!-- ================= 설정 ================= -->
+<section id="cfg-file" data-s>
+  <h2><span class="num">30</span>설정 파일 &amp; 리로드</h2>
+<pre><code><span class="c"># 위치</span>
+Linux / macOS : ~/.config/herdr/config.toml
+Windows       : %APPDATA%\herdr\config.toml
+
+<span class="c"># 전체 기본값으로 시작하기</span>
+herdr --default-config &gt; ~/.config/herdr/config.toml
+
+<span class="c"># 수정 후 반영 (UI 전역 메뉴의 "reload config"도 가능)</span>
+herdr server reload-config</code></pre>
+  <p class="muted">설정 없이도 동작합니다. 잘못된 값은 안전한 기본값으로 대체되고 시작 시 경고가 뜹니다. 첫 실행 온보딩을 건너뛰려면 <code>onboarding = false</code>.</p>
+<pre><code>[server]
+headless_cols = 160   <span class="c"># 클라이언트 없을 때 가상 터미널 크기 (기본 120×40)</span>
+headless_rows = 50</code></pre>
+</section>
+
+<section id="cfg-terminal" data-s>
+  <h2><span class="num">31</span>터미널 기본값 &amp; 워크트리 &amp; 원격</h2>
+<pre><code>[terminal]
+default_shell = "nu"      <span class="c"># 비우면 $SHELL → /bin/sh (Windows: pwsh.exe → powershell.exe)</span>
+shell_mode = "auto"       <span class="c"># auto | login | non_login (auto는 macOS에서 로그인 셸)</span>
+new_cwd = "follow"        <span class="c"># follow | home | current | "~/Projects"</span>
+kitty_graphics = true     <span class="c"># Kitty 그래픽 프로토콜 렌더링</span>
+
+[worktrees]
+directory = "~/.herdr/worktrees"
+
+[remote]
+manage_ssh_config = true  <span class="c"># herdr --remote 시 keepalive/연결 재사용 관리</span></code></pre>
+</section>
+
+<section id="cfg-keys" data-s>
+  <h2><span class="num">32</span>키바인딩 문법</h2>
+<pre><code>[keys]
+prefix = "ctrl+b"
+goto = "prefix+g"
+new_tab = "prefix+c"
+next_tab = ["prefix+n", "ctrl+alt+]"]   <span class="c"># 배열로 여러 단축키</span>
+focus_pane_left = "prefix+h"
+navigate_workspace_down = "j"           <span class="c"># Navigate 모드 전용</span>
+navigate_pane_down = "ctrl+j"
+split_horizontal = "prefix+minus"
+switch_tab = "prefix+1..9"              <span class="c"># 인덱스 점프</span></code></pre>
+  <ul>
+    <li><code>prefix+n</code> = prefix 후 n / <code>ctrl+alt+n</code> = 직접 단축키</li>
+    <li>사용 가능: <code>ctrl+a</code> <code>shift+n</code> <code>alt+1</code> <code>cmd+k</code>, <code>enter</code> <code>tab</code> <code>esc</code> 방향키, <code>minus</code> <code>comma</code> <code>ampersand</code> <code>plus</code> <code>backtick</code></li>
+    <li>수식키 없는 일반 키(<code>n</code>)를 직접 바인딩하면 타이핑을 가로채므로 위험합니다.</li>
+    <li>전체 액션 목록은 공식 Config reference에서 <code>keys.</code> 검색, 또는 앱에서 <kbd>prefix+?</kbd>.</li>
+  </ul>
+</section>
+
+<section id="cfg-command" data-s>
+  <h2><span class="num">33</span>커스텀 명령 단축키</h2>
+<pre><code><span class="c"># lazygit 팝업</span>
+[[keys.command]]
+key = "prefix+alt+g"
+type = "popup"
+command = "lazygit"
+description = "run lazygit"
+width = "80%"
+height = "80%"
+
+<span class="c"># 스크래치 터미널 팝업 (Unix/macOS)</span>
+[[keys.command]]
+key = "prefix+t"
+type = "popup"
+command = "exec \"${SHELL:-sh}\""
+description = "open scratch terminal"
+width = "80%"
+height = "80%"
+
+<span class="c"># 플러그인 액션 실행</span>
+[[keys.command]]
+key = "prefix+l"
+type = "plugin_action"
+command = "example.layout.apply"
+description = "apply layout"</code></pre>
+  <div class="tbl"><table>
+    <tr><th>type</th><th>동작</th></tr>
+    <tr><td><code>popup</code></td><td>탭 레이아웃을 바꾸지 않는 모달 팝업. 명령 종료 시 닫힘</td></tr>
+    <tr><td><code>pane</code></td><td>임시 확대 패널을 열고 명령 종료 시 닫힘</td></tr>
+    <tr><td><code>shell</code></td><td>백그라운드에서 분리 실행</td></tr>
+    <tr><td><code>plugin_action</code></td><td>설치된 플러그인 액션 호출</td></tr>
+  </table></div>
+  <p class="muted">Windows에서는 <code>cmd.exe /d /c</code>로 실행되므로 <code>%HERDR_BIN_PATH%</code> 문법을 쓰거나 <code>powershell.exe -NoLogo</code>를 명시하세요.</p>
+</section>
+
+<section id="cfg-theme" data-s>
+  <h2><span class="num">34</span>테마</h2>
+<pre><code>[theme]
+name = "catppuccin"          <span class="c"># "terminal" = 호스트 터미널 ANSI 팔레트 따르기</span>
+auto_switch = true           <span class="c"># 라이트/다크 자동 전환</span>
+light_name = "catppuccin-latte"
+dark_name = "catppuccin"
+
+[theme.custom]
+sidebar_bg = "#181825"
+active_row_bg = "#1e1e2e"
+selection_bg = "#313244"
+panel_bg = "reset"
+accent = "#a6e3a1"</code></pre>
+</section>
+
+<section id="cfg-ui" data-s>
+  <h2><span class="num">35</span>UI · 사이드바 · 상태바</h2>
+<pre><code>[ui]
+mouse_capture = true
+pane_borders = "auto"          <span class="c"># auto | always | off</span>
+tab_bar_position = "top"       <span class="c"># top | bottom</span>
+status_indicators = "symbols"  <span class="c"># 색 + 모양으로 상태 구분</span>
+window_title = "{hostname}: {workspace}"  <span class="c"># 토큰: {hostname} {workspace} {tab} {pane} {terminal_title}</span>
+confirm_close = true
+
+<span class="c"># tmux 스타일 오른쪽 상태 영역</span>
+tab_bar_right = [
+  { type = "zoom" },
+  { type = "hostname" },
+  { type = "datetime", format = "%H:%M" },
+  { type = "text", text = "prod" },
+  { type = "command", command = "~/.config/herdr/status.sh", interval_seconds = 5, timeout_seconds = 2 },
+]
+tab_bar_right_separator = " · "
+
+<span class="c"># 사이드바 에이전트 행 레이아웃 (기본값)</span>
+[ui.sidebar.agents]
+row_gap = 0
+rows = [
+  ["state_icon", "machine", "workspace", "tab"],
+  ["agent"],
+]
+
+[ui.sidebar.spaces]
+rows = [
+  ["state_icon", "workspace"],
+  ["branch", "git_status"],
+]</code></pre>
+  <p class="muted">에이전트 행 토큰: <code>state_icon</code> <code>state_text</code> <code>machine</code> <code>workspace</code> <code>tab</code> <code>pane</code> <code>agent</code> <code>terminal_title</code> <code>terminal_title_stripped</code> <code>$name</code>(커스텀). 스페이스 행 토큰: <code>state_icon</code> <code>state_text</code> <code>workspace</code> <code>branch</code> <code>git_status</code> <code>$name</code>. 토큰별 색/굵기(<code>fg</code>, <code>bold</code>, <code>dim</code>)와 조건 규칙(<code>equals</code>, <code>contains</code>, <code>starts_with</code>, <code>gt</code>, <code>lt</code>, <code>hide</code>)을 지정할 수 있고, <code>rows_by_agent</code>로 에이전트별 레이아웃을 따로 줄 수 있습니다.</p>
+</section>
+
+<section id="cfg-notify" data-s>
+  <h2><span class="num">36</span>알림 · 사운드</h2>
+<pre><code>[ui.toast]
+delivery = "herdr"       <span class="c"># herdr | terminal (SSH에서도 동작) | system (OS 알림) | off</span>
+delay_seconds = 1
+
+[ui.toast.herdr]
+position = "bottom-right"
+
+[ui.sound]
+path = "sounds/notification.mp3"    <span class="c"># mp3만, 설정 파일 기준 상대경로</span>
+done_path = "sounds/done.mp3"
+request_path = "sounds/request.mp3"
+
+[ui.sound.agents]
+droid = "off"     <span class="c"># default | on | off</span>
+claude = "on"</code></pre>
+  <p class="muted">활성 탭의 알림은 표시되지 않습니다. macOS <code>system</code> 알림은 <code>brew install terminal-notifier</code> 설치를 권장합니다.</p>
+</section>
+
+<section id="cfg-adv" data-s>
+  <h2><span class="num">37</span>고급 — 에이전트 복원 · 한글 IME</h2>
+  <h3>서버 재시작 후 에이전트 대화 재개</h3>
+<pre><code>[session]
+resume_agents_on_restore = true
+startup_per_agent_delay_ms = 100</code></pre>
+  <p class="muted">공식 통합이 보고한 유효한 세션 참조가 있는 패널만 재개되고, 나머지는 일반 셸로 복원됩니다.</p>
+  <h3>한글 입력 사용자 필수 설정</h3>
+<pre><code>[experimental]
+<span class="c"># prefix 입력 중에는 자동으로 영문(ASCII) 입력으로 전환 → 끝나면 원래 입력기로 복원</span>
+switch_ascii_input_source_in_prefix = true
+
+<span class="c"># macOS: 커서를 숨기는 에이전트 TUI에서 IME 후보창이 패널을 따라가도록</span>
+reveal_hidden_cursor_for_cjk_ime = true
+cjk_ime_agents = ["claude", "pi", "codex"]</code></pre>
+  <div class="note">한글 입력 상태에서 <kbd>ctrl+b</kbd> 뒤에 <kbd>c</kbd>를 누르면 "ㅊ"가 입력되어 단축키가 먹지 않는 문제를 <code>switch_ascii_input_source_in_prefix</code>가 해결해 줍니다. macOS와 Windows에서 동작하며, Windows는 현재 <b>한국어 IME만</b> 지원합니다.</div>
+</section>
+
+<section id="cfg-logs" data-s>
+  <h2><span class="num">38</span>로그</h2>
+<pre><code>~/.config/herdr/herdr.log
+~/.config/herdr/herdr-client.log
+~/.config/herdr/herdr-server.log
+
+<span class="c"># 디버그 로그</span>
+HERDR_LOG=herdr=debug herdr</code></pre>
+</section>
+
+<!-- ================= 레시피 ================= -->
+<section id="recipes" data-s>
+  <h2><span class="num">39</span>자동화 레시피</h2>
+  <h3>① 프로젝트 워크스페이스 + 에이전트 2개 + 개발 서버 자동 구성</h3>
+<pre><code>#!/usr/bin/env bash
+set -e
+WS=$(herdr workspace create --cwd ~/project --label api --no-focus)
+WS_ID=$(echo "$WS"   | jq -r .result.workspace.workspace_id)
+ROOT=$(echo "$WS"    | jq -r .result.root_pane.pane_id)
+
+<span class="c"># 오른쪽 분할 → Claude, 아래 분할 → 개발 서버</span>
+RIGHT=$(herdr pane split "$ROOT" --direction right | jq -r .result.pane.pane_id)
+DOWN=$(herdr pane split "$ROOT" --direction down --ratio 0.3 | jq -r .result.pane.pane_id)
+
+herdr agent start reviewer --kind claude --pane "$RIGHT"
+herdr agent start builder  --kind codex  --pane "$ROOT"
+
+herdr pane run "$DOWN" "npm run dev"
+herdr pane wait-output "$DOWN" --match "ready" --timeout 60000
+
+herdr workspace focus "$WS_ID"</code></pre>
+  <h3>② 에이전트에게 작업 맡기고 끝날 때까지 대기 후 결과 읽기</h3>
+<pre><code>herdr agent prompt reviewer "src/auth 의 보안 이슈를 검토해줘" --wait --until idle --until done --timeout 900000
+herdr agent read reviewer --source recent-unwrapped --lines 200 &gt; review.txt
+herdr notification show "리뷰 완료" --sound done</code></pre>
+  <h3>③ 승인 대기 중인 에이전트 찾기</h3>
+<pre><code>herdr agent list | jq '.result.agents[] | select(.status=="blocked")'
+<span class="c"># 또는 UI에서 prefix+g → b</span></code></pre>
+  <p class="muted">※ ③의 JSON 필드명은 버전에 따라 다를 수 있으니 <code>herdr agent list</code> 출력을 한 번 확인한 뒤 jq 경로를 맞추세요.</p>
+  <h3>④ 기능 브랜치마다 워크트리 + 에이전트</h3>
+<pre><code>herdr worktree create --cwd ~/project --branch feat/login --base main --label login --focus
+<span class="c"># 작업 후 정리 (브랜치는 남음)</span>
+herdr worktree remove --workspace &lt;worktree_workspace_id&gt;</code></pre>
+  <h3>⑤ 원격 서버에서 장시간 작업</h3>
+<pre><code>herdr machine add workbox --label "GPU box"
+herdr --remote workbox                 <span class="c"># 붙어서 작업 → prefix+q 로 분리</span>
+herdr --machine "GPU box" agent list   <span class="c"># 로컬에서 원격 에이전트 상태 확인</span></code></pre>
+</section>
+
+<footer>herdr 0.9.3 공식 문서(CLI reference · Keyboard · Concepts · Configuration) 기준으로 정리 · 2026-10</footer>
+</main>
+</div>
+
+<script>
+// 테마 전환
+(function(){
+  var root=document.documentElement,btn=document.getElementById('themeBtn');
+  try{var t=localStorage.getItem('herdr-theme');if(t)root.setAttribute('data-theme',t);}catch(e){}
+  btn.onclick=function(){
+    var cur=root.getAttribute('data-theme');
+    var dark=cur?cur==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var next=dark?'light':'dark';root.setAttribute('data-theme',next);
+    try{localStorage.setItem('herdr-theme',next);}catch(e){}
+  };
+})();
+// 모바일 메뉴
+(function(){
+  var side=document.getElementById('side');
+  document.getElementById('menuBtn').onclick=function(){side.classList.toggle('open');};
+  side.addEventListener('click',function(e){if(e.target.tagName==='A')side.classList.remove('open');});
+})();
+// 복사 버튼
+document.querySelectorAll('pre').forEach(function(pre){
+  var b=document.createElement('button');b.className='copy';b.textContent='복사';
+  b.onclick=function(){
+    var txt=pre.querySelector('code').innerText;
+    var done=function(){b.textContent='복사됨';setTimeout(function(){b.textContent='복사';},1200);};
+    if(navigator.clipboard)navigator.clipboard.writeText(txt).then(done,function(){});
+  };
+  pre.appendChild(b);
+});
+// 검색: 섹션 필터링
+(function(){
+  var q=document.getElementById('q'),secs=[].slice.call(document.querySelectorAll('section[data-s]'));
+  var links=[].slice.call(document.querySelectorAll('nav.side a'));
+  q.addEventListener('input',function(){
+    var v=q.value.trim().toLowerCase();
+    secs.forEach(function(s){
+      var hit=!v||s.textContent.toLowerCase().indexOf(v)>-1;
+      s.classList.toggle('hidden',!hit);
+      var a=links.filter(function(l){return l.getAttribute('href')==='#'+s.id;})[0];
+      if(a)a.classList.toggle('hidden',!hit);
+    });
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='/'&&document.activeElement!==q){e.preventDefault();q.focus();}
+    if(e.key==='Escape'&&document.activeElement===q){q.value='';q.dispatchEvent(new Event('input'));q.blur();}
+  });
+})();
+</script>
+</body>
+</html>
